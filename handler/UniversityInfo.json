@@ -1,0 +1,38 @@
+[
+  {
+    "web_pages": [
+      "http://www.ntnu.no/"
+    ],
+    "name": "Norwegian University of Science and Technology",
+    "alpha_two_code": "NO",
+    "state-province": null,
+    "domains": [
+      "ntnu.no"
+    ],
+    "country": "Norway"
+  },
+  {
+  "web_pages": [
+  "http://ska.khio.no/main"
+  ],
+  "name": "National Academy of Fine Arts",
+  "alpha_two_code": "NO",
+  "state-province": null,
+  "domains": [
+  "ska.khio.no"
+  ],
+  "country": "Norway"
+  },
+  {
+  "web_pages": [
+  "http://www.uib.no/"
+  ],
+  "name": "University of Bergen",
+  "alpha_two_code": "NO",
+  "state-province": null,
+  "domains": [
+  "uib.no"
+  ],
+  "country": "Norway"
+  }
+]
