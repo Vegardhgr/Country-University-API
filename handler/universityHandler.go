@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 func UniversityHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,21 +13,39 @@ func UniversityHandler(w http.ResponseWriter, r *http.Request) {
 
 	uniInfoOutput, err := ioutil.ReadFile("handler/UniversityInfo.json")
 
+	countryInfoOutput, err := ioutil.ReadFile("handler/CountryInfo.json")
+
 	if err != nil {
 		fmt.Println("Error reading file:", err)
 		return
 	}
 
-	//mappy := make(map[interface{}]interface{})
-	//var uni []interface{}
 	var unis []UniInfo
+	var country []CountryInfo
+
 	json.Unmarshal(uniInfoOutput, &unis)
 
+	json.Unmarshal(countryInfoOutput, &country)
+
 	for i := range unis {
+		var cNumber int = 1
+		for c := range country {
+			if strings.Compare(country[c].Name.Common, unis[i].Country) == 0 {
+				cNumber = c
+				fmt.Println(country[c])
+				break
+			}
+		}
+		unis[i].CountryInfo = country[cNumber]
+
 		json.NewEncoder(w).Encode(unis[i])
 	}
 
-	/*name := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
+	/*for i := range uniCountry {
+		json.NewEncoder(w).Encode(uniCountry[i])
+	}*/
+
+	name := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
 
 	retrieveUniInfoUrl, _ := http.Get("http://universities.hipolabs.com/search?name=" + name)
 
