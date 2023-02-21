@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -11,24 +12,38 @@ import (
 func UniversityHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	uniInfoOutput, err := ioutil.ReadFile("handler/UniversityInfo.json")
+	//uniInfoOutput, err := ioutil.ReadFile("handler/UniversityInfo.json")
 
-	countryInfoOutput, err := ioutil.ReadFile("handler/CountryInfo.json")
+	uniInfoOutput, err := http.Get(UNI_URL)
+	if err != nil {
+		log.Fatal("Error getting the url:", err)
+		return
+	}
+	//countryInfoOutput, err := ioutil.ReadFile("handler/CountryInfo.json")
+
+	countryInfoOutput, err := http.Get(COUNTRY_URL)
 
 	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
+		log.Fatal("Error getting the url:", err)
 	}
 
 	var unis []UniInfo
 	var country []CountryInfo
 
-	json.Unmarshal(uniInfoOutput, &unis)
+	uniInfo, _ := ioutil.ReadAll(uniInfoOutput.Body)
 
-	json.Unmarshal(countryInfoOutput, &country)
+	json.Unmarshal(uniInfo, &unis)
+
+	/*for i := range unis {
+
+	}*/
+
+	countryInfo, _ := ioutil.ReadAll(countryInfoOutput.Body)
+
+	json.Unmarshal(countryInfo, &country)
 
 	for i := range unis {
-		var cNumber int = 1
+		var cNumber int = 0
 		for c := range country {
 			if strings.Compare(country[c].Name.Common, unis[i].Country) == 0 {
 				cNumber = c
@@ -38,26 +53,32 @@ func UniversityHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		unis[i].CountryInfo = country[cNumber]
 
-		json.NewEncoder(w).Encode(unis[i])
+		//json.NewEncoder(w).Encode(unis[i])
 	}
 
 	/*for i := range uniCountry {
 		json.NewEncoder(w).Encode(uniCountry[i])
 	}*/
 
-	name := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
+	uniName := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
 
-	retrieveUniInfoUrl, _ := http.Get("http://universities.hipolabs.com/search?name=" + name)
+	//retrieveUniInfoUrl, err := http.Get(UNI_URL + "search?name=" + uniName)
 
-	/*var uunis []UniInfo
+	var uunis []UniInfo
+	//uunisIndex := 0
+	for i := range unis {
+		if strings.Contains(unis[i].UniName, uniName) {
+			json.NewEncoder(w).Encode(unis[i])
+		}
 
-	infoFromSiteAsArray, _ := ioutil.ReadAll(retrieveUniInfoUrl.Body)
+	}
+	//infoFromSiteAsArray, _ := ioutil.ReadAll(retrieveUniInfoUrl.Body)
 
-	json.Unmarshal(infoFromSiteAsArray, &uunis)
+	//json.Unmarshal(infoFromSiteAsArray, &uunis)
 
 	for i := range uunis {
 		json.NewEncoder(w).Encode(uunis[i])
-	}*/
+	}
 
 	//json.NewEncoder(w).Encode(infoFromSiteUnmarshaled)
 

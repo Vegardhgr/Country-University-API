@@ -1,11 +1,5 @@
 package handler
 
-type Languages struct {
-	NNO string `json:"nno"`
-	NOB string `json:"nob"`
-	SMI string `json:"smi"`
-}
-
 /*type UniInfo struct {
 	Name      string    `json:"name"`
 	Coutry    string    `json:"country"`
@@ -25,6 +19,11 @@ type CountryInfo struct {
 	Name      CountryName       `json:"name"`
 	Languages map[string]string `json:"languages"`
 	Map       map[string]string `json:"maps"`
+}
+
+type UniAndCountryInfo struct {
+	UniInfo
+	CountryInfo
 }
 
 /*type Country struct {
