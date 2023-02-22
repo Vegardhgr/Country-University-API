@@ -9,17 +9,120 @@ import (
 	"strings"
 )
 
-func UniversityHandler(w http.ResponseWriter, r *http.Request) {
+//func GetUniInfo()
+func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	/*case http.MethodPost:
+	handleUniAndCountryPost(w, r)*/
+	case http.MethodGet:
+		handleUniAndCountryGet(w, r)
+	}
+}
+
+func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
-	//uniInfoOutput, err := ioutil.ReadFile("handler/UniversityInfo.json")
+	//uniName := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
+	uniName := strings.Split(r.URL.String(), "/")[4]
+	log.Println(uniName)
+	uniInfoOutput, err := http.Get(UNI_URL + "search?name=" + uniName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println("Error getting the url:", err)
+		return
+	}
+
+	//countryInfoOutput, err := http.Get(COUNTRY_URL)
+
+	/*if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println("Error getting the url:", err)
+		return
+	}*/
+
+	var unis []UniInfo
+	var countries []CountryInfo
+
+	country := make(map[string]CountryInfo)
+
+	//var country map[string]CountryInfo
+
+	uniInfo, _ := ioutil.ReadAll(uniInfoOutput.Body)
+
+	json.Unmarshal(uniInfo, &unis)
+
+	fmt.Println(len(unis))
+
+	/*countryInfo, _ := ioutil.ReadAll(countryInfoOutput.Body)
+
+	json.Unmarshal(countryInfo, &country)*/
+	//sum := 0
+	for i := range unis {
+		//var cNumber int = 0
+		/*Gets the country information based on which country the university
+		is located in*/
+		//_, ok := country[unis[i].Country]
+		//log.Println(S, " : ", ok)
+		if _, ok := country[unis[i].Country]; ok == false {
+			/*sum++
+			fmt.Println(sum)*/
+			countryRetrievedFromUrl, err := http.Get(COUNTRY_URL + "name/" + unis[i].Country)
+			//fmt.Println(unis[i].Country)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				log.Println("Error trying to get the url:", err)
+				return
+			}
+			countryAsByteArr, err := ioutil.ReadAll(countryRetrievedFromUrl.Body)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("Error when trying to read using ioutil.ReadAll", err)
+			}
+
+			json.Unmarshal(countryAsByteArr, &countries)
+			fmt.Println("Len: ", len(countries))
+			fmt.Println(countries[len(countries)-1].Name.Common)
+			country[countries[len(countries)-1].Name.Common] = countries[len(countries)-1]
+
+			//_, ok = country[unis[i].Country]
+		}
+
+		//Adding the matching country into the university struct
+		unis[i].CountryInfo = country[unis[i].Country]
+	}
+	//json.NewEncoder(w).Encode(unis)
+	err = json.NewEncoder(w).Encode(unis)
+	//error2 := encoder
+	if err != nil {
+
+	}
+	/*for i := range unis {
+		var cNumber int = 0
+		for c := range country {
+			if strings.Compare(country[c].Name.Common, unis[i].Country) == 0 {
+				cNumber = c
+				fmt.Println(country[c])
+				break
+			}
+		}
+		unis[i].CountryInfo = country[cNumber]
+	}*/
+
+	/*for i := range unis {
+		if strings.Contains(unis[i].UniName, uniName) {
+			json.NewEncoder(w).Encode(unis[i])
+		}
+	}*/
+}
+
+/*func UniversityHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
 
 	uniInfoOutput, err := http.Get(UNI_URL)
 	if err != nil {
 		log.Fatal("Error getting the url:", err)
 		return
 	}
-	//countryInfoOutput, err := ioutil.ReadFile("handler/CountryInfo.json")
 
 	countryInfoOutput, err := http.Get(COUNTRY_URL)
 
@@ -33,10 +136,6 @@ func UniversityHandler(w http.ResponseWriter, r *http.Request) {
 	uniInfo, _ := ioutil.ReadAll(uniInfoOutput.Body)
 
 	json.Unmarshal(uniInfo, &unis)
-
-	/*for i := range unis {
-
-	}*/
 
 	countryInfo, _ := ioutil.ReadAll(countryInfoOutput.Body)
 
@@ -53,88 +152,61 @@ func UniversityHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		unis[i].CountryInfo = country[cNumber]
 
-		//json.NewEncoder(w).Encode(unis[i])
 	}
-
-	/*for i := range uniCountry {
-		json.NewEncoder(w).Encode(uniCountry[i])
-	}*/
 
 	uniName := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
 
-	//retrieveUniInfoUrl, err := http.Get(UNI_URL + "search?name=" + uniName)
-
-	var uunis []UniInfo
-	//uunisIndex := 0
 	for i := range unis {
 		if strings.Contains(unis[i].UniName, uniName) {
 			json.NewEncoder(w).Encode(unis[i])
 		}
-
 	}
-	//infoFromSiteAsArray, _ := ioutil.ReadAll(retrieveUniInfoUrl.Body)
-
-	//json.Unmarshal(infoFromSiteAsArray, &uunis)
-
-	for i := range uunis {
-		json.NewEncoder(w).Encode(uunis[i])
-	}
-
-	//json.NewEncoder(w).Encode(infoFromSiteUnmarshaled)
-
-	/*if name != "" {
-		for i := range unis {
-			fmt.Println(unis[i].Name, " : ", name)
-			if strings.Contains(unis[i].Name, name) {
-				json.NewEncoder(w).Encode(unis[i])
-			}
-		}
-	}
-	urlSplit := strings.Split(r.URL.Path, "/")
-
-	if len(urlSplit) < 3 || urlSplit[3] != UNI_INFO {
-		http.Error(w, "URL not written correctly", http.StatusBadRequest)
-		log.Println("Malformed URL in request.")
-		return
-	}
-
-	/*for i := range unis {
-		if unis[i].Name == "Norwegian University of Science and Technology" {
-			encode := json.NewEncoder(w)
-			error1 := encode.Encode(unis[i])
-			if error1 != nil {
-				errMessage, _ := "Something went wrong during encoding: ", error
-				log.Println(errMessage)
-			}
-			//fmt.Println(unis[i])
-		}
-	}*/
-
-	/*for i := range mappy {
-
-		fmt.Println(i)
-	}*/
-
-	/*universityInfo := UniInfo{
-		Name: "Norwegian University of Science and Technology",
-		Coutry: "Norway",
-		Isocode: "NO",
-		Webpages: ["http://www.ntnu.no/"],
-		Languages: Languages {
-			NNO:"Norwegian Nynorsk",
-			NOB:"Norwegian Nynorsk",
-			SMI:"Sami"}
-			Map: "https://www.openstreetmap.org/relation/2978650"
-	}
-	}*/
-
-	//output := "This service works"
-	//encode := json.NewEncoder(w)
-	/*err2 := encode.Encode(mappy)
-
-	if err2 != nil {
-		http.Error(w, "Error using "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	log.Println(mappy)*/
 }
+
+func UniversityHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+
+	uniInfoOutput, err := http.Get(UNI_URL)
+	if err != nil {
+		log.Fatal("Error getting the url:", err)
+		return
+	}
+
+	countryInfoOutput, err := http.Get(COUNTRY_URL)
+
+	if err != nil {
+		log.Fatal("Error getting the url:", err)
+	}
+
+	var unis []UniInfo
+	var country []CountryInfo
+
+	uniInfo, _ := ioutil.ReadAll(uniInfoOutput.Body)
+
+	json.Unmarshal(uniInfo, &unis)
+
+	countryInfo, _ := ioutil.ReadAll(countryInfoOutput.Body)
+
+	json.Unmarshal(countryInfo, &country)
+
+	for i := range unis {
+		var cNumber int = 0
+		for c := range country {
+			if strings.Compare(country[c].Name.Common, unis[i].Country) == 0 {
+				cNumber = c
+				fmt.Println(country[c])
+				break
+			}
+		}
+		unis[i].CountryInfo = country[cNumber]
+
+	}
+
+	uniName := strings.ReplaceAll(strings.Split(r.URL.String(), "/")[4], "%20", " ")
+
+	for i := range unis {
+		if strings.Contains(unis[i].UniName, uniName) {
+			json.NewEncoder(w).Encode(unis[i])
+		}
+	}
+}*/

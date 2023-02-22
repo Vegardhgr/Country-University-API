@@ -14,9 +14,9 @@ func main() {
 		port = "8080"
 	}
 
-	http.HandleFunc(handler.UNI_INFO_PATH, handler.UniversityHandler)
+	http.HandleFunc(handler.UNI_INFO_PATH, handler.UniAndCountryHandler)
 	http.HandleFunc(handler.NEIGHBOUR_UNIS_PATH, handler.UniversityHandler)
-	http.HandleFunc(handler.DIAG_PATH, handler.UniversityHandler)
+	//http.HandleFunc(handler.DIAG_PATH, handler.UniversityHandler)
 
 	log.Println("Server starts on port " + port)
 	http.ListenAndServe(":"+port, nil)
