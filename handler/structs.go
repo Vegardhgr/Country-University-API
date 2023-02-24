@@ -8,15 +8,22 @@ package handler
 	Languages Languages `json:"location"`
 }*/
 type UniInfo struct {
-	WebPages []string `json:"web_pages,omitempty"`
-	UniName  string   `json:"name,omitempty"`
-	Country  string   `json:"country,omitempty"`
+	UniName  string   `json:"name"`
+	Country  string   `json:"country"`
 	Isocode  string   `json:"alpha_two_code"`
+	WebPages []string `json:"web_pages"`
 	CountryInfo
 }
 
 type CountryInfo struct {
-	Name      CountryName       `json:"name"`
+	//Languages map[string]string `json:"languages"`
+	//Country Country
+	Languages map[string]string `json:"languages"`
+	Map       string            `json:"map"`
+	//Map       map[string]string `json:"maps"`
+}
+
+type Country struct {
 	Languages map[string]string `json:"languages"`
 	Map       map[string]string `json:"maps"`
 }
