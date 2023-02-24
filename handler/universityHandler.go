@@ -57,48 +57,40 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			/*Reading the content of what was sent from the api*/
 			countryAsByteArr, err := ioutil.ReadAll(countryRetrievedFromUrl.Body)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
-				log.Println("Error when trying to read using ioutil.ReadAll", err)
+				log.Println("Error when trying to read using ioutil.ReadAll function ", err)
 			}
 
-			//var code []countryCode
 			var countries []Country
 			countryToBeAddedToUni := make([]CountryInfo, 1)
-			//var countryToBeAddedToUni []CountryInfo
 
-			json.Unmarshal(countryAsByteArr, &countries)
-			fmt.Println(countryToBeAddedToUni[0])
-			fmt.Println(countries[0].Languages)
+			/*Unmarshalling the content into the countries list*/
+			err = json.Unmarshal(countryAsByteArr, &countries)
+			if err != nil {
+				fmt.Println("Error during unmarshalling: ", err)
+			}
+
+			/*Adding the languages to the struct that will be used
+			in the university struct*/
 			countryToBeAddedToUni[0].Languages = countries[0].Languages
-			fmt.Println(2)
 
+			/*Adding the open street maps link to the struct that will be used
+			in the university struct*/
 			countryToBeAddedToUni[0].Map = countries[0].Map["openStreetMaps"]
-			fmt.Println(3)
 
+			/*Adding the country information in the map with isocode as key*/
 			country[unis[i].Isocode] = countryToBeAddedToUni[0]
-			fmt.Println(4)
-
-			//unis[i].CountryInfo.Map = country
-			/*fmt.Println(len(countries), " length")
-			fmt.Println(countries[len(countries)-1])*/
-			//json.Unmarshal(countryAsByteArr, &code)
-
-			//fmt.Println(countryNumber, ". UNI Isocode: ", unis[i].Isocode, ", ", unis[i].Country)
-			//fmt.Println("Country iso: ", code[0].Cca2)
-			//countryNumber++
-
-			/*Adding the country information to the map with isocode as key*/
-			//country[code[0].Cca2] = countries[len(countries)-1]
 		}
 
 		//Adding the matching country into the university struct
 		unis[i].CountryInfo = country[unis[i].Isocode]
 	}
-	//json.NewEncoder(w).Encode(unis)
+
+	//Sending the universities back to the user
 	err = json.NewEncoder(w).Encode(unis)
-	//error2 := encoder
 	if err != nil {
 		fmt.Println("Error during encoding: ", err)
 	}
