@@ -24,6 +24,8 @@ type CountryInfo struct {
 }
 
 type Country struct {
+	Name      CountryName       `json:"name"`
+	Cca2      string            `json:"cca2"`
 	Languages map[string]string `json:"languages"`
 	Map       map[string]string `json:"maps"`
 }
@@ -40,7 +42,7 @@ type UniAndCountryInfo struct {
 }*/
 
 type CountryName struct {
-	Common string `json:"common"`
+	Official string `json:"official"`
 }
 
 type UniCountry struct {
