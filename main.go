@@ -14,6 +14,7 @@ func main() {
 		port = "8080"
 	}
 
+	http.HandleFunc(handler.DEFAULT, handler.DefaultHandler)
 	http.HandleFunc(handler.UNI_INFO_PATH, handler.UniAndCountryHandler)
 	http.HandleFunc(handler.NEIGHBOUR_UNIS_PATH, handler.NeighbourUnisHandler)
 	//http.HandleFunc(handler.DIAG_PATH, handler.UniversityHandler)
