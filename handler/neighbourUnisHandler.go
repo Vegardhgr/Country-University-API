@@ -35,7 +35,6 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println("Error: ", err.Error())
 		if strings.Compare(strings.Split(err.Error(), ":")[0], "Invalid limit given") == 0 {
 			fmt.Println("Limit, is not convertable to type int:\n ", err)
 			fmt.Fprint(w, "Limit, is not convertable to type int:\n", err)
