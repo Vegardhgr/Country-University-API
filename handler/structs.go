@@ -30,6 +30,10 @@ type Country struct {
 	Map       map[string]string `json:"maps"`
 }
 
+type Borders struct {
+	Borders []string `json:"borders"`
+}
+
 type UniAndCountryInfo struct {
 	UniInfo
 	CountryInfo

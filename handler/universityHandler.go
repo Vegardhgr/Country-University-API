@@ -24,7 +24,6 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	uniName := strings.Split(r.URL.String(), "/")[4]
 
 	fmt.Println(uniName)
-
 	uniInfoOutput, err := http.Get(UNI_URL + "search?name=" + uniName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -50,7 +49,7 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 			is located in*/
 
 			//Retrieving the country that matches with the country of the university
-			countryRetrievedFromUrl, err := http.Get(COUNTRY_URL + "alpha/" + unis[i].Isocode + "?fullText=true")
+			countryRetrievedFromUrl, err := http.Get(COUNTRY_URL + "alpha/" + unis[i].Isocode)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				log.Println("Error trying to get the url:", err)
