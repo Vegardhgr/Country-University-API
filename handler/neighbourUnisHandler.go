@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -26,12 +25,14 @@ func NeighbourUnisHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//handleNeighbourCountryUnisGet
+/*Gets uni and country from two api's, combines the universities with the corresponding
+neighbouring country, and sends it back to the user*/
 func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
 	//Todo: add a close tage where u need it. Is it only necessary to close the r.body? And why does it still work,
 	//todo: even when i do not defer it?
-	err := r.Body.Close()
 	countryName, universityName, limit, err := urlHandler(r)
 
 	if err != nil {
@@ -59,7 +60,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	countryInfo, err := getCountryByName(countryName)
+	countryInfo, err := GetCountryByName(countryName)
 
 	if err != nil {
 		log.Println("Error when calling the api: ", err)
@@ -72,7 +73,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	var allUnis []UniInfo
 	/*Retrieving all universities by the name given by the user as there is no good way to search
 	for universities in a specific country in the api for universities*/
-	uni, err := getUniByName(universityName) //http.Get(UNI_URL + "search?name=" + universityName)
+	uni, err := GetUniByName(universityName) //http.Get(UNI_URL + "search?name=" + universityName)
 
 	//Todo: ask if errors should be handle where they are happening or where the error happening are called from.
 	//Todo: maybe better to handle errors where they are happening so there is no need to write multiple error handling
@@ -83,7 +84,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = decode(uni.Body, &allUnis)
+	err = Decode(uni.Body, &allUnis)
 
 	if err != nil {
 		log.Println("Error during decoding: ", err)
@@ -97,7 +98,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	var borderingCountries []Borders
 
 	/*Placing the bordering countries to the country given by the user, in the borderingCountries array*/
-	err = decode(countryInfo.Body, &borderingCountries) //json.NewDecoder(countryInfo.Body).Decode(&borderingCountries)
+	err = Decode(countryInfo.Body, &borderingCountries) //json.NewDecoder(countryInfo.Body).Decode(&borderingCountries)
 
 	if err != nil {
 		_, err = fmt.Fprint(w, "Error during decoding: ", err, err.Error())
@@ -116,7 +117,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 
 	for i := range borderingCountries[0].Borders {
 		/*Gets the country and adds it to the array*/
-		addBorderingCountryToArr(borderingCountries[0].Borders[i], &countryArr, i)
+		AddBorderingCountryToArr(borderingCountries[0].Borders[i], &countryArr, i)
 	}
 
 	/*Combining university and the corresponding university*/
@@ -135,7 +136,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-/*Handles the url specified by the user*/
+//urlHandler/*Handles the url specified by the user*/
 //todo: pass the parameters as pointers instead, and then return just the error
 func urlHandler(r *http.Request) (string, string, int, error) {
 	urlParts := strings.Split(r.URL.String(), "/")
@@ -166,7 +167,7 @@ func urlHandler(r *http.Request) (string, string, int, error) {
 	return countryName, universityName, limit, nil
 }
 
-/*Combining universities with corresponding country information*/
+//combineUniversityAndCountry/*Combining universities with corresponding country information*/
 func combineUniversityAndCountry(unisInBorderingCountries *[]UniInfo, allUnis *[]UniInfo,
 	countryArr *[]Country, limit int) {
 	if len(*allUnis) > 0 {
@@ -178,7 +179,7 @@ func combineUniversityAndCountry(unisInBorderingCountries *[]UniInfo, allUnis *[
 					*unisInBorderingCountries = append(*unisInBorderingCountries, (*allUnis)[i])
 					fmt.Println("Country: ", (*allUnis)[i].Country, " :: Languages: ", (*countryArr)[j].Languages)
 					(*unisInBorderingCountries)[unisAdded].CountryInfo.Languages = (*countryArr)[j].Languages
-					(*unisInBorderingCountries)[unisAdded].CountryInfo.Map = (*countryArr)[j].Map["openStreetMaps"]
+					(*unisInBorderingCountries)[unisAdded].CountryInfo.StreetMap = (*countryArr)[j].StreetMap["openStreetMaps"]
 					unisAdded++
 				}
 			}
@@ -187,56 +188,4 @@ func combineUniversityAndCountry(unisInBorderingCountries *[]UniInfo, allUnis *[
 			}
 		}
 	}
-}
-
-/*Adds a country to an array*/
-func addBorderingCountryToArr(countryCode string, countryArr *[]Country, placeToAddInArr int) {
-	var tempCountryArr []Country
-
-	country, err := getCountryByAlphaCode(countryCode)
-
-	//Todo: remember to return this error back
-	if err != nil {
-		fmt.Println("Error with http get method: ", err)
-		return
-	}
-	err = decode(country.Body, &tempCountryArr)
-	//err = json.NewDecoder(country.Body).Decode(&tempCountryArr)
-
-	fmt.Println("Length: ", len(*countryArr))
-
-	//fmt.Println("Country ", i, ". ", tempCountryArr[0].Name.Official, " :: ", tempCountryArr[0].Languages)
-
-	//Todo: Ask how to not treat tempCountryArr as an array but rather as a Country object
-	/*Adding the country in the last place of the country array*/
-	(*countryArr)[placeToAddInArr] = tempCountryArr[0]
-
-	//Todo: Return error back
-	if err != nil {
-		fmt.Println("Error during decoding: ", err)
-	}
-
-	//Todo: I think i can remove this line
-	tempCountryArr[0].Languages = nil
-}
-
-/*Returns the http response from the country api*/
-func getCountryByName(countryName string) (*http.Response, error) {
-	return http.Get(COUNTRY_URL + "name/" + countryName + "?fullText=true")
-}
-
-/*Returns the http response from the country api*/
-func getCountryByAlphaCode(alphaCode string) (*http.Response, error) {
-	return http.Get(COUNTRY_URL + "alpha/" + alphaCode)
-}
-
-/*Returns the http response from the university api*/
-func getUniByName(universityName string) (*http.Response, error) {
-	fmt.Println("University name: ", universityName)
-	return http.Get(UNI_URL + "search?name_contains=" + universityName)
-}
-
-/*A general function for decoding*/
-func decode(body io.ReadCloser, list any) error {
-	return json.NewDecoder(body).Decode(&list)
 }

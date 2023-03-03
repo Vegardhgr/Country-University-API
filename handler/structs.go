@@ -19,15 +19,15 @@ type CountryInfo struct {
 	//Languages map[string]string `json:"languages"`
 	//Country Country
 	Languages map[string]string `json:"languages"`
-	Map       string            `json:"map"`
-	//Map       map[string]string `json:"maps"`
+	StreetMap string            `json:"map"`
+	//StreetMap       map[string]string `json:"maps"`
 }
 
 type Country struct {
 	Name      CountryName       `json:"name"`
 	Cca2      string            `json:"cca2"`
 	Languages map[string]string `json:"languages"`
-	Map       map[string]string `json:"maps"`
+	StreetMap map[string]string `json:"maps"`
 }
 
 type Borders struct {
@@ -42,7 +42,7 @@ type UniAndCountryInfo struct {
 /*type Country struct {
 	Name      CountryName       `json:"name"`
 	Languages map[string]string `json:"languages"`
-	Map       string            `json:"map"`
+	StreetMap       string            `json:"map"`
 }*/
 
 type CountryName struct {
@@ -61,5 +61,5 @@ type UniCountry struct {
 	Isocode   string            `json:"isocode"`
 	Webpages  []string          `json:"webpages"`
 	Languages map[string]string `json:"languages"`
-	Map       string            `json:"map"`
+	StreetMap       string            `json:"map"`
 }*/

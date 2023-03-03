@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -14,17 +13,23 @@ func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		handleUniAndCountryGet(w, r)
 	default:
-		fmt.Fprintf(w, "No implementation for method "+r.Method)
-		fmt.Println("No implementation for method " + r.Method)
+		log.Println("No implementation for method " + r.Method)
+		_, err := fmt.Fprint(w, "No implementation for method "+r.Method)
+		if err != nil {
+			log.Println("Error using fmt.Fprint function: ", err)
+		}
 	}
 }
 
+//handleUniAndCountryGet
+/*Gets uni and country from two api's, combines them, and sends it back to the user*/
 func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	uniName := strings.Split(r.URL.String(), "/")[4]
 
 	fmt.Println(uniName)
-	uniInfoOutput, err := http.Get(UNI_URL + "search?name=" + uniName)
+	uniInfoOutput, err := GetUniByName(uniName)
+	//http.Get(UNI_URL + "search?name_contains=" + uniName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Println("Error getting the url:", err)
@@ -32,63 +37,41 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var unis []UniInfo
+
+	//Will store visited countries with isocode as key
 	country := make(map[string]CountryInfo)
 
-	uniInfo, _ := ioutil.ReadAll(uniInfoOutput.Body)
+	err = Decode(uniInfoOutput.Body, &unis)
 
-	err = json.Unmarshal(uniInfo, &unis)
 	if err != nil {
-		fmt.Println("Error during unmarshalling ", err)
+		log.Println("Error during decoding: ", err)
+		fmt.Fprint(w, "Error status code: ", http.StatusInternalServerError)
 		return
 	}
+
+	countries := make([]Country, 0)
+	var countryToBeAddedToUni CountryInfo
 
 	for i := range unis {
 		//Checks if the country already exists in map
 		if _, ok := country[unis[i].Isocode]; ok == false {
-			/*Gets the country information based on which country the university
-			is located in*/
+			//Country does not exist in map, so it must be added to it
+			length := len(country)
+			AddBorderingCountryToArr(unis[i].Isocode, &countries, length)
 
-			//Retrieving the country that matches with the country of the university
-			countryRetrievedFromUrl, err := http.Get(COUNTRY_URL + "alpha/" + unis[i].Isocode)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				log.Println("Error trying to get the url:", err)
-				return
-			}
-
-			/*Reading the content of what was sent from the api*/
-			countryAsByteArr, err := ioutil.ReadAll(countryRetrievedFromUrl.Body)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				log.Println("Error when trying to read using ioutil.ReadAll function ", err)
-			}
-
-			var countries []Country
-			countryToBeAddedToUni := make([]CountryInfo, 1)
-
-			/*Unmarshalling the content into the countries list*/
-			err = json.Unmarshal(countryAsByteArr, &countries)
-			if err != nil {
-				fmt.Println("Error during unmarshalling: ", err)
-			}
-
-			/*Adding the languages to the struct that will be used
-			in the university struct*/
-			countryToBeAddedToUni[0].Languages = countries[0].Languages
-
-			/*Adding the open street maps link to the struct that will be used
-			in the university struct*/
-			countryToBeAddedToUni[0].Map = countries[0].Map["openStreetMaps"]
+			/*Need to go through countryToBeAddedToUni because to add country in the map,
+			the object must be of same type as the value in the map.*/
+			countryToBeAddedToUni.Languages = countries[length].Languages
+			countryToBeAddedToUni.StreetMap = countries[length].StreetMap["openStreetMaps"]
 
 			/*Adding the country information in the map with isocode as key*/
-			country[unis[i].Isocode] = countryToBeAddedToUni[0]
+			country[unis[i].Isocode] = countryToBeAddedToUni
 		}
-
 		//Adding the matching country into the university struct
 		unis[i].CountryInfo = country[unis[i].Isocode]
 	}
 
-	//Sending the universities back to the user
+	//Sending the uni and country info back to the user
 	err = json.NewEncoder(w).Encode(unis)
 	if err != nil {
 		fmt.Println("Error during encoding: ", err)
