@@ -14,10 +14,7 @@ func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 		handleUniAndCountryGet(w, r)
 	default:
 		log.Println("No implementation for method " + r.Method)
-		_, err := fmt.Fprint(w, "No implementation for method "+r.Method)
-		if err != nil {
-			log.Println("Error using fmt.Fprint function: ", err)
-		}
+		http.Error(w, "No implementation for method "+r.Method, http.StatusNotImplemented)
 	}
 }
 
@@ -28,11 +25,9 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	uniName := strings.Split(r.URL.String(), "/")[4]
 
 	fmt.Println(uniName)
-	uniInfoOutput, err := GetUniByName(uniName)
+	uniInfoOutput, success := GetUniByName(w, uniName)
 	//http.Get(UNI_URL + "search?name_contains=" + uniName)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Println("Error getting the url:", err)
+	if !success {
 		return
 	}
 
@@ -41,23 +36,24 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	//Will store visited countries with isocode as key
 	country := make(map[string]CountryInfo)
 
-	err = Decode(uniInfoOutput.Body, &unis)
-
-	if err != nil {
-		log.Println("Error during decoding: ", err)
-		fmt.Fprint(w, "Error status code: ", http.StatusInternalServerError)
+	if success := Decode(w, uniInfoOutput.Body, &unis); success == false {
 		return
 	}
 
 	countries := make([]Country, 0)
 	var countryToBeAddedToUni CountryInfo
 
+	counter := 0
 	for i := range unis {
 		//Checks if the country already exists in map
 		if _, ok := country[unis[i].Isocode]; ok == false {
+			counter++
+			fmt.Println(counter, " : ", unis[i].Country)
 			//Country does not exist in map, so it must be added to it
 			length := len(country)
-			AddBorderingCountryToArr(unis[i].Isocode, &countries, length)
+			if success := AddBorderingCountryToArr(w, unis[i].Isocode, &countries); success == false {
+				return
+			}
 
 			/*Need to go through countryToBeAddedToUni because to add country in the map,
 			the object must be of same type as the value in the map.*/
@@ -72,8 +68,10 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Sending the uni and country info back to the user
-	err = json.NewEncoder(w).Encode(unis)
+	err := json.NewEncoder(w).Encode(unis)
 	if err != nil {
-		fmt.Println("Error during encoding: ", err)
+		log.Println("Error during encoding: " + err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 }
