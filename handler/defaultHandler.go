@@ -13,12 +13,12 @@ func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 	// Offer information for redirection to paths
 	output := "<h1>Welcome!<h1><h3>This service does not provide any functionality on root path level." +
 		" Please try one of the paths below<h3>" +
-		"<h6>Search by university:" +
-		"<a href=\"" + UNI_INFO_PATH + "\">" + UNI_INFO_PATH + "</a></h6><br>" +
-		"<h6>Search for universities in a neighbouring country:<br>" +
-		"<a href=\"" + NEIGHBOUR_UNIS_PATH + "\">" + NEIGHBOUR_UNIS_PATH + "</a></h6><br>" +
-		"<h6>For diagnostics:" +
-		"<a href=\"" + DIAG_PATH + "\">" + DIAG_PATH + "</a></h6>"
+		"<h5>Search by university:" +
+		"<a href=\"" + UNI_INFO_PATH + "\">" + UNI_INFO_PATH + "</a></h5>" +
+		"<h5>Search for universities in a neighbouring country:<br>" +
+		"<a href=\"" + NEIGHBOUR_UNIS_PATH + "\">" + NEIGHBOUR_UNIS_PATH + "</a></h5>" +
+		"<h5>For diagnostics:" +
+		"<a href=\"" + DIAG_PATH + "\">" + DIAG_PATH + "</a></h5>"
 
 	// Write output to client
 	_, err := fmt.Fprintf(w, "%v", output)
