@@ -115,7 +115,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 
 		if *limit <= 0 {
 			log.Println("Limit, must be greater than zero:\n ", err)
-			http.Error(w, "Invalid limit given: Status code: ", http.StatusBadRequest)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return false
 		}
 	}
@@ -132,13 +132,12 @@ func combineUniversityAndCountry(unisInBorderingCountries *[]UniInfo, allUnis *[
 				//fmt.Println(i, ". Uni name: ", allUnis[i].UniName, " :: Uni iso: ", allUnis[i].Isocode, " :: Country iso: ", countryArr[j].Cca2)
 				if strings.Compare((*allUnis)[i].Isocode, (*countryArr)[j].Cca2) == 0 {
 					*unisInBorderingCountries = append(*unisInBorderingCountries, (*allUnis)[i])
-					fmt.Println("Country: ", (*allUnis)[i].Country, " :: Languages: ", (*countryArr)[j].Languages)
 					(*unisInBorderingCountries)[unisAdded].CountryInfo.Languages = (*countryArr)[j].Languages
 					(*unisInBorderingCountries)[unisAdded].CountryInfo.StreetMap = (*countryArr)[j].StreetMap["openStreetMaps"]
 					unisAdded++
 				}
 			}
-			if limit != -1 && limit == unisAdded {
+			if limit == unisAdded {
 				break
 			}
 		}
