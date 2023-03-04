@@ -30,11 +30,19 @@ Path: /unisearcher/v1/diag/<br>
 &nbsp;&nbsp;&nbsp;&nbsp; Gets information about the apis that are used, the version of this service, as well as time since last service restart.
 
 ## Decisions 
-&nbsp;&nbsp; When retrieving universities from http://universities.hipolabs.com/, it is not an option to search by alpha_two_code. <br>
-&nbsp;&nbsp; The country name in http://universities.hipolabs.com/, and the country name in https://restcountries.com/, are not always similar.<br>
-&nbsp;&nbsp; Therefore, it is not possible to retrieve both universities and country based on country name.<br>
-&nbsp;&nbsp; For that reason, when retrieving universities, all universities are retrieved from the university api based on the university name
-&nbsp;&nbsp; provided by the user.<br> Then in the code, universities are filtered based on the country's alpha_two_code.<br><br>
-&nbsp;&nbsp; Another way to solve this problem is retrieve all the countries, and retrieve all the universities. Where the isocode matches<br>
-&nbsp;&nbsp; but the country name is different, add the name of the country in the country api in a map as the key, and add the country name in<br>
-&nbsp;&nbsp; the university api as value. This way, a mapping between a country with different names in the two apis has been created.
+When retrieving universities from http://universities.hipolabs.com/, it is not an option to search by alpha_two_code. <br>
+The country name in http://universities.hipolabs.com/, and the country name in https://restcountries.com/, are not always similar.<br>
+Therefore, it is not possible to retrieve both universities and country based on country name.<br>
+For that reason, when retrieving universities, all universities are retrieved from the university api based on the university name
+provided by the user. Then in the code, universities are filtered based on the country's alpha_two_code.<br><br>
+
+Another way to solve this problem is to retrieve all the countries, and retrieve all the universities. Where the isocode matches<br>
+but where the country name is different, add the country name from the country api in a map as the key, and add the country name from<br>
+the university api as value. This way, a mapping between a country with different names in the two apis has been created.<br><br>
+
+The reasoning for why the first solution was chosen, is that the second solution can be vulnerable to changes in the apis.<br>
+If one of the apis changes a country name, and the map in this service has not yet been updated, the mapping will not work anymore.<br>
+The first solution can therefore be more robust in terms of changes in the apis that are used.<br><br>
+
+The first solution is still not perfect, as a lot of unnecessary data can be retrieved as all universities with a said name is retrieved,<br>
+instead of just the universities with a specific name in specific countries. Alt
