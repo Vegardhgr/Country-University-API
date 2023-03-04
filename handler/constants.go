@@ -13,3 +13,6 @@ const DIAG = "diag"
 const UNI_INFO_PATH = "/unisearcher/v1/" + UNI_INFO + "/"
 const NEIGHBOUR_UNIS_PATH = "/unisearcher/v1/" + NEIGHBOUR_UNIS + "/"
 const DIAG_PATH = "/unisearcher/v1/" + DIAG + "/"
+
+const VALID_NUMBER_OF_URL_PARTS_UNI_HANDLER = 4
+const VALID_NUMBER_OF_URL_PARTS_NEIGHBOUR_UNIS_HANDLER = 5

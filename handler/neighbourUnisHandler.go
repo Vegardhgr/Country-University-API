@@ -9,8 +9,6 @@ import (
 	"strings"
 )
 
-const VALID_NUMBER_OF_URL_PARTS = 5
-
 func NeighbourUnisHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -94,7 +92,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 	urlParts := strings.Split(r.URL.String(), "/")
 
 	/*Validates the url*/
-	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS {
+	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS_NEIGHBOUR_UNIS_HANDLER {
 		http.Error(w, http.StatusText(http.StatusNotFound)+". Expecting format .../{country name}/{uni name}",
 			http.StatusNotFound)
 		log.Println("Malformed URL in request")

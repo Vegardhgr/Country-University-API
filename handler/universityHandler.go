@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const VALID_NUMBER_OF_URL_PARTS_UNI_HANDLER = 4
-
 func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -90,7 +88,7 @@ func urlHandlerForUni(w http.ResponseWriter, url string, uniName *string) bool {
 	/*Checks that the url has the required length, and that a university name is specified*/
 	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS_UNI_HANDLER ||
 		strings.Compare(*uniName, "") == 0 {
-		http.Error(w, http.StatusText(http.StatusNotFound)+". Expecting format .../{uni name}",
+		http.Error(w, "Expecting format .../{uni name}. Please provide a university name.",
 			http.StatusNotFound)
 		log.Println("Malformed URL in request")
 		return false
