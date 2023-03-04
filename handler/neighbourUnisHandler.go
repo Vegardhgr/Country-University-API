@@ -36,6 +36,12 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 
 	countryInfo, success := GetCountryByName(w, countryName)
 
+	if countryInfo.StatusCode == 404 {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		log.Println("Invalid country name.")
+		return
+	}
+
 	if !success {
 		return
 	}
