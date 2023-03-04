@@ -4,7 +4,7 @@ package handler
 const COUNTRY_URL = "http://localhost:8081/unisearcher/v1/country/"*/
 
 const UNI_URL = "http://universities.hipolabs.com/"
-const COUNTRY_URL = "https://restcountries.com/v3.1/"
+const COUNTRY_URL = "https://restcountries.com/"
 
 const DEFAULT = "/"
 const UNI_INFO = "uniinfo"

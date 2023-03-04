@@ -10,7 +10,7 @@ import (
 // GetCountryByName
 ///*Returns the http response from the country api*/
 func GetCountryByName(w http.ResponseWriter, countryName string) (*http.Response, bool) {
-	countryInfo, err := http.Get(COUNTRY_URL + "name/" + countryName + "?fullText=true")
+	countryInfo, err := http.Get(COUNTRY_URL + "v3.1/name/" + countryName + "?fullText=true")
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Println("Error when getting country")
@@ -22,7 +22,7 @@ func GetCountryByName(w http.ResponseWriter, countryName string) (*http.Response
 // GetCountryByAlphaCode
 ///*Returns the http response from the country api*/
 func GetCountryByAlphaCode(w http.ResponseWriter, alphaCode string) (*http.Response, bool) {
-	countryInfo, err := http.Get(COUNTRY_URL + "alpha/" + alphaCode)
+	countryInfo, err := http.Get(COUNTRY_URL + "v3.1/alpha/" + alphaCode)
 	if err != nil {
 		log.Println("Error with http get method: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -34,7 +34,7 @@ func GetCountryByAlphaCode(w http.ResponseWriter, alphaCode string) (*http.Respo
 // GetUniByName
 ///*Returns the http response from the university api*/
 func GetUniByName(w http.ResponseWriter, universityName string) (*http.Response, bool) {
-	uniInfo, err := http.Get(UNI_URL + "search?name" + universityName)
+	uniInfo, err := http.Get(UNI_URL + "search?name=" + universityName)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Println("Error getting the url: ", err)
@@ -55,9 +55,9 @@ func Decode(w http.ResponseWriter, body io.ReadCloser, list any) bool {
 	return true
 }
 
-//AddBorderingCountryToArr
+//AddCountryToArr
 ///*Adds a country to an array*/
-func AddBorderingCountryToArr(w http.ResponseWriter, countryCode string, countryArr *[]Country) bool {
+func AddCountryToArr(w http.ResponseWriter, countryCode string, countryArr *[]Country) bool {
 	var tempCountryArr []Country
 
 	country, success := GetCountryByAlphaCode(w, countryCode)
@@ -75,7 +75,5 @@ func AddBorderingCountryToArr(w http.ResponseWriter, countryCode string, country
 	/*Adding the country in the last place of the country array*/
 	*countryArr = append(*countryArr, tempCountryArr[0])
 
-	//Todo: I think i can remove this line
-	tempCountryArr[0].Languages = nil
 	return true
 }

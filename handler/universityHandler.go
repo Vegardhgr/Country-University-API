@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -23,10 +22,8 @@ func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	uniName := strings.Split(r.URL.String(), "/")[4]
-
-	fmt.Println(uniName)
 	uniInfoOutput, success := GetUniByName(w, uniName)
-	//http.Get(UNI_URL + "search?name_contains=" + uniName)
+
 	if !success {
 		return
 	}
@@ -43,15 +40,12 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	countries := make([]Country, 0)
 	var countryToBeAddedToUni CountryInfo
 
-	counter := 0
 	for i := range unis {
 		//Checks if the country already exists in map
 		if _, ok := country[unis[i].Isocode]; ok == false {
-			counter++
-			fmt.Println(counter, " : ", unis[i].Country)
 			//Country does not exist in map, so it must be added to it
 			length := len(country)
-			if success := AddBorderingCountryToArr(w, unis[i].Isocode, &countries); success == false {
+			if success := AddCountryToArr(w, unis[i].Isocode, &countries); success == false {
 				return
 			}
 

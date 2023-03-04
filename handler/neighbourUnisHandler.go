@@ -61,7 +61,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	if success = Decode(w, countryInfo.Body, &borderingCountries); success == false {
 		return
 	}
-	
+
 	/*A list for holding the unis in bordering countries*/
 	unisInBorderingCountries := make([]UniInfo, 0)
 
@@ -70,7 +70,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	//var tempCountryArr []Country
 	for i := range borderingCountries[0].Borders {
 		/*Gets the country and adds it to the array*/
-		if success := AddBorderingCountryToArr(w, borderingCountries[0].Borders[i], &countryArr); success == false {
+		if success := AddCountryToArr(w, borderingCountries[0].Borders[i], &countryArr); success == false {
 			return
 		}
 	}
@@ -93,8 +93,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 	universityName *string, limit *int) bool {
 	urlParts := strings.Split(r.URL.String(), "/")
 
-	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS ||
-		strings.EqualFold(urlParts[1]+"/"+urlParts[2]+"/"+urlParts[3], NEIGHBOUR_UNIS_PATH) {
+	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS {
 		http.Error(w, http.StatusText(http.StatusNotFound)+". Expecting format .../{country name}/{uni name}",
 			http.StatusNotFound)
 		log.Println("Malformed URL in request")
@@ -105,7 +104,6 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 	*universityName = strings.Split(urlParts[5], "?")[0]
 
 	limitString := r.URL.Query().Get("limit")
-	*limit = -1
 
 	if !strings.EqualFold(limitString, "") {
 		var err error
