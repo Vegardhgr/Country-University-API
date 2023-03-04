@@ -2,10 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 )
+
+const VALID_NUMBER_OF_URL_PARTS_UNI_HANDLER = 4
 
 func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -21,7 +24,14 @@ func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 /*Gets uni and country from two api's, combines them, and sends it back to the user*/
 func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	uniName := strings.Split(r.URL.String(), "/")[4]
+
+	uniName := ""
+	//uniName := strings.Split(r.URL.String(), "/")[4]
+	/*Validates the url provided by the user. Success will be false if the url is invalid*/
+	if success := urlHandlerForUni(w, r.URL.String(), &uniName); success == false {
+		return
+	}
+
 	uniInfoOutput, success := GetUniByName(w, uniName)
 
 	if !success {
@@ -34,6 +44,7 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	country := make(map[string]CountryInfo)
 
 	if success := Decode(w, uniInfoOutput.Body, &unis); success == false {
+		fmt.Println("1")
 		return
 	}
 
@@ -46,6 +57,7 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 			//Country does not exist in map, so it must be added to it
 			length := len(country)
 			if success := AddCountryToArr(w, unis[i].Isocode, &countries); success == false {
+				fmt.Println(2)
 				return
 			}
 
@@ -68,4 +80,21 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+}
+
+/*Validates the url provided by the user*/
+func urlHandlerForUni(w http.ResponseWriter, url string, uniName *string) bool {
+	urlParts := strings.Split(url, "/")
+	*uniName = strings.Split(url, "/")[4]
+
+	/*Checks that the url has the required length, and that a university name is specified*/
+	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS_UNI_HANDLER ||
+		strings.Compare(*uniName, "") == 0 {
+		http.Error(w, http.StatusText(http.StatusNotFound)+". Expecting format .../{uni name}",
+			http.StatusNotFound)
+		log.Println("Malformed URL in request")
+		return false
+	}
+
+	return true
 }

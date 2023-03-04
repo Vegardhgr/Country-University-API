@@ -34,7 +34,7 @@ func GetCountryByAlphaCode(w http.ResponseWriter, alphaCode string) (*http.Respo
 // GetUniByName
 ///*Returns the http response from the university api*/
 func GetUniByName(w http.ResponseWriter, universityName string) (*http.Response, bool) {
-	uniInfo, err := http.Get(UNI_URL + "search?name=" + universityName)
+	uniInfo, err := http.Get(UNI_URL + "search?name_contains=" + universityName)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Println("Error getting the url: ", err)
@@ -68,10 +68,7 @@ func AddCountryToArr(w http.ResponseWriter, countryCode string, countryArr *[]Co
 	if success = Decode(w, country.Body, &tempCountryArr); success == false {
 		return false
 	}
-
-	//fmt.Println("Country ", i, ". ", tempCountryArr[0].Name.Official, " :: ", tempCountryArr[0].Languages)
-
-	//Todo: Ask how to not treat tempCountryArr as an array but rather as a Country object
+	
 	/*Adding the country in the last place of the country array*/
 	*countryArr = append(*countryArr, tempCountryArr[0])
 

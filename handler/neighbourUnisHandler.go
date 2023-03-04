@@ -93,6 +93,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 	universityName *string, limit *int) bool {
 	urlParts := strings.Split(r.URL.String(), "/")
 
+	/*Validates the url*/
 	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS {
 		http.Error(w, http.StatusText(http.StatusNotFound)+". Expecting format .../{country name}/{uni name}",
 			http.StatusNotFound)
