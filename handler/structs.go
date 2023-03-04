@@ -1,12 +1,7 @@
 package handler
 
-/*type UniInfo struct {
-	Name      string    `json:"name"`
-	Coutry    string    `json:"country"`
-	Isocode   string    `json:"isocode"`
-	Webpages  list.List `json:"webpages"`
-	Languages Languages `json:"location"`
-}*/
+// UniInfo
+///*Relevant university and country fields*/
 type UniInfo struct {
 	UniName  string   `json:"name"`
 	Country  string   `json:"country"`
@@ -15,14 +10,15 @@ type UniInfo struct {
 	CountryInfo
 }
 
+// CountryInfo
+///*Relevant country fields*/
 type CountryInfo struct {
-	//Languages map[string]string `json:"languages"`
-	//Country Country
 	Languages map[string]string `json:"languages"`
 	StreetMap string            `json:"map"`
-	//StreetMap       map[string]string `json:"maps"`
 }
 
+//Country
+///*Fields that are necessary from the country api, but these are not sent to the user*/
 type Country struct {
 	Name      CountryName       `json:"name"`
 	Cca2      string            `json:"cca2"`
@@ -30,36 +26,23 @@ type Country struct {
 	StreetMap map[string]string `json:"maps"`
 }
 
+// Borders
+///*A struct for bordering countries*/
 type Borders struct {
 	Borders []string `json:"borders"`
 }
 
-type UniAndCountryInfo struct {
-	UniInfo
-	CountryInfo
-}
-
-/*type Country struct {
-	Name      CountryName       `json:"name"`
-	Languages map[string]string `json:"languages"`
-	StreetMap       string            `json:"map"`
-}*/
-
+// CountryName
+///*A struct for a countries official name*/
 type CountryName struct {
 	Official string `json:"official"`
 }
 
-type UniCountry struct {
-	UniInfo
-	CountryInfo
+// Diag
+///*A struct for diag*/
+type Diag struct {
+	UnisApiStatus      string  `json:"universitiesapi"`
+	CountriesApiStatus string  `json:"countriesapi"`
+	Version            string  `json:"version"`
+	Uptime             float64 `json:"uptime"`
 }
-
-/*type UniCountry struct {
-	WebPages  []string          `json:"web_pages,omitempty"`
-	Name      string            `json:"name,omitempty"`
-	Country   string            `json:"country,omitempty"`
-	Isocode   string            `json:"isocode"`
-	Webpages  []string          `json:"webpages"`
-	Languages map[string]string `json:"languages"`
-	StreetMap       string            `json:"map"`
-}*/
