@@ -93,7 +93,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 
 	/*Validates the url*/
 	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS_NEIGHBOUR_UNIS_HANDLER {
-		http.Error(w, http.StatusText(http.StatusNotFound)+". Expecting format .../{country name}/{uni name}",
+		http.Error(w, "Expecting format .../{country name}/{uni name}",
 			http.StatusNotFound)
 		log.Println("Malformed URL in request")
 		return false
