@@ -6,8 +6,11 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
+// DiagHandler
+///*Handles different methods in diag path. Only functionality for get*/
 func DiagHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -18,7 +21,13 @@ func DiagHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//diagHandlerGet
+//*Contains the functionality for diag path*/
 func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
+	/*urlHandlerDiag returns false if the url does not meet the required specifications*/
+	if !urlHandlerDiag(w, r.URL.String()) {
+		return
+	}
 	country, err := http.Get(COUNTRY_URL)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -40,10 +49,25 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 	diag.UnisApiStatus = strconv.Itoa(statusCodeUni)
 	diag.Version = "V1"
 	diag.Uptime = GetTime()
-	err = json.NewEncoder(w).Encode(diag)
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "    ")
+	err = enc.Encode(diag)
 
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+}
 
+//urlHandlerDiag
+//*Validates the url for diag. Returns true if valid.*/
+func urlHandlerDiag(w http.ResponseWriter, url string) bool {
+	urlParts := strings.Split(url, "/")
+
+	/*Validates the length of the url*/
+	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS_DIAG || urlParts[len(urlParts)-1] != "" {
+		http.Error(w, "Expecting format .../diag.", http.StatusNotFound)
+		log.Println("Malformed URL in request for diag.")
+		return false
+	}
+	return true
 }

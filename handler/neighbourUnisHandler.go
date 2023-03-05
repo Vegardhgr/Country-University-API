@@ -36,12 +36,6 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 
 	countryInfo, success := GetCountryByName(w, countryName)
 
-	if countryInfo.StatusCode == 404 {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		log.Println("Invalid country name.")
-		return
-	}
-
 	if !success {
 		return
 	}
@@ -78,11 +72,14 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	/*Combining university and the corresponding university*/
+	/*Combining university and the corresponding country*/
 	combineUniversityAndCountry(&unisInBorderingCountries, &allUnis,
 		&countryArr, limit)
 
-	err := json.NewEncoder(w).Encode(unisInBorderingCountries)
+	enc := json.NewEncoder(w)
+	//SetIndent formats the output like pretty print in postman
+	enc.SetIndent("", "    ")
+	err := enc.Encode(unisInBorderingCountries)
 
 	if err != nil {
 		log.Println("Error when encoding: ", err)
@@ -101,7 +98,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 	if len(urlParts)-1 != VALID_NUMBER_OF_URL_PARTS_NEIGHBOUR_UNIS_HANDLER {
 		http.Error(w, "Expecting format .../{country name}/{uni name}",
 			http.StatusNotFound)
-		log.Println("Malformed URL in request")
+		log.Println("Malformed URL in request for neighbouring universities.")
 		return false
 	}
 

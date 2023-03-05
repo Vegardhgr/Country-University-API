@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -38,24 +37,27 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 
 	var unis []UniInfo
 
-	//Will store visited countries with isocode as key
+	/*Will store visited countries with isocode as key. Makes it easy to search and retrieve a country.*/
 	country := make(map[string]CountryInfo)
 
 	if success := Decode(w, uniInfoOutput.Body, &unis); success == false {
-		fmt.Println("1")
 		return
 	}
 
+	//Stores all the countries
 	countries := make([]Country, 0)
+
+	/*countryToBeAddedToUni is used to add the last country that is stored in the list named countries,
+	to the map named country.*/
 	var countryToBeAddedToUni CountryInfo
 
+	/*Loops through all the unis*/
 	for i := range unis {
 		//Checks if the country already exists in map
 		if _, ok := country[unis[i].Isocode]; ok == false {
 			//Country does not exist in map, so it must be added to it
 			length := len(country)
 			if success := AddCountryToArr(w, unis[i].Isocode, &countries); success == false {
-				fmt.Println(2)
 				return
 			}
 
@@ -72,7 +74,12 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Sending the uni and country info back to the user
-	err := json.NewEncoder(w).Encode(unis)
+	//err := json.NewEncoder(w).Encode(unis)
+	enc := json.NewEncoder(w)
+	//SetIndent formats the output like pretty print in postman
+	enc.SetIndent("", "    ")
+	err := enc.Encode(unis)
+
 	if err != nil {
 		log.Println("Error during encoding: " + err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -90,7 +97,7 @@ func urlHandlerForUni(w http.ResponseWriter, url string, uniName *string) bool {
 		strings.Compare(*uniName, "") == 0 {
 		http.Error(w, "Expecting format .../{uni name}. Please provide a university name.",
 			http.StatusNotFound)
-		log.Println("Malformed URL in request")
+		log.Println("Malformed URL in request for universities.")
 		return false
 	}
 
