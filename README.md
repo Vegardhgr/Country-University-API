@@ -32,9 +32,9 @@ Path: /unisearcher/v1/diag<br>
 ## Decisions 
 #### Country name issue
 The country name in http://universities.hipolabs.com/, and the country name in https://restcountries.com/, are not always similar.
-Therefore, it is not possible to retrieve both universities and country based on country name. In the university API, it is not an option to
-search for universities by alpha code. For that reason, when retrieving universities, all universities are retrieved from the university API
-based on the university name provided by the user. Then in the code, universities are filtered based on the country's alpha_two_code.<br><br>
+Therefore, it is not a good option to retrieve both universities and country based on one specific country name, as the name can vary. In the university API, it is 
+not an option to search for universities by alpha code. For that reason, when retrieving universities, all universities are retrieved from the university API
+based on the university name provided by the user. Then in the code, universities are filtered based on the country's alpha code.<br><br>
 
 Another way to address this issue is to retrieve all the countries and all the universities from their respective APIs at every service restart.
 If the alpha codes match, but the country names differ between the two APIs, add the country name from the country API as key, and add the country name from the
