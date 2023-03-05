@@ -30,6 +30,7 @@ Path: /unisearcher/v1/diag<br>
 &nbsp;&nbsp;&nbsp;&nbsp; Gets information about the apis that are used, the version of this service, as well as time since last service restart.
 
 ## Decisions 
+#### Country name in the two apis
 When retrieving universities from http://universities.hipolabs.com/, it is not an option to search by alpha_two_code. 
 The country name in http://universities.hipolabs.com/, and the country name in https://restcountries.com/, are not always similar.
 Therefore, it is not possible to retrieve both universities and country based on country name.
@@ -46,4 +47,11 @@ The first solution can therefore be more robust in terms of changes in the apis 
 
 The first solution is still not perfect. Since all universities with a said name is retrieved, there is a great chance that a lot of
 unnecessary data will be collected and processed. <br><br>
+
+#### Error handling
+In golang, it seems to be no prescribed approach for managing erros. If an error appears some where in the code, it could either be returned back to 
+the top based on the same concept as exceptions in java, or the error could be managed where it happens. Since exceptions is not a thing in golang, it does not seem to 
+be any good ways to return and handle errors at the top of the code. Therefore, in this assignment, error handling is done where the error appears. This
+may not be the best way to deal with errors, but it was more satisfying to just return a boolean based on whether there was an error and deal with it where it
+appeared, compared to always needing to return an error and then check if the returned error was equal to a specific error string.
 
