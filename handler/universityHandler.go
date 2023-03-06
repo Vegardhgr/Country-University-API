@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// UniAndCountryHandler
+//Handles different methods in university path. Only functionality for get
 func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -18,17 +20,17 @@ func UniAndCountryHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //handleUniAndCountryGet
-/*Gets uni and country from two api's, combines them, and sends it back to the user*/
+/*Gets uni and country from two APIs, combines them, and sends it back to the user*/
 func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 
 	uniName := ""
-	//uniName := strings.Split(r.URL.String(), "/")[4]
 	/*Validates the url provided by the user. Success will be false if the url is invalid*/
 	if success := urlHandlerForUni(w, r.URL.String(), &uniName); success == false {
 		return
 	}
 
+	//Gets university response. success is true if it was successful
 	uniInfoOutput, success := GetUniByName(w, uniName)
 
 	if !success {
@@ -37,7 +39,7 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 
 	var unis []UniInfo
 
-	/*Will store visited countries with isocode as key. Makes it easy to search and retrieve a country.*/
+	/*Stores visited countries with isocode as key. Makes it easy to search and retrieve a country.*/
 	country := make(map[string]CountryInfo)
 
 	if success := Decode(w, uniInfoOutput.Body, &unis); success == false {
@@ -74,7 +76,6 @@ func handleUniAndCountryGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Sending the uni and country info back to the user
-	//err := json.NewEncoder(w).Encode(unis)
 	enc := json.NewEncoder(w)
 	//SetIndent formats the output like pretty print in postman
 	enc.SetIndent("", "    ")

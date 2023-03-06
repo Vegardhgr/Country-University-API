@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+//DefaultHandler
+/*Handler for the default path*/
 func DefaultHandler(w http.ResponseWriter, r *http.Request) {
 	// Ensure interpretation as HTML by client (browser)
 	w.Header().Set("content-type", "text/html")

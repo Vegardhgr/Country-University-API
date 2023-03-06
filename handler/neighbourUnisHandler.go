@@ -23,7 +23,7 @@ func NeighbourUnisHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //handleNeighbourCountryUnisGet
-/*Gets uni and country from two API, combines the universities with the corresponding
+/*Gets uni and country from two APIs, combines the universities with the corresponding
 neighbouring country, and sends it back to the user*/
 func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
@@ -36,7 +36,7 @@ func handleNeighbourCountryUnisGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Gets country info. success is true if it was successful
+	//Gets country response. success is true if it was successful
 	countryInfo, success := GetCountryByName(w, countryName)
 
 	if !success {
@@ -124,7 +124,7 @@ func urlHandler(w http.ResponseWriter, r *http.Request, countryName,
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return false
 		}
-		//Checks that limit is greater than zero
+		//Checks if limit is less or equal to zero
 		if *limit <= 0 {
 			log.Println("Limit, must be greater than zero:\n ", err)
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)

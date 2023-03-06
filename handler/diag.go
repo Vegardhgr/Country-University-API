@@ -10,7 +10,7 @@ import (
 )
 
 // DiagHandler
-///*Handles different methods in diag path. Only functionality for get*/
+/*Handles different methods in diag path. Only functionality for get*/
 func DiagHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -22,7 +22,7 @@ func DiagHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //diagHandlerGet
-//*Contains the functionality for diag path*/
+/*Contains the functionality for diag path*/
 func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	/*urlHandlerDiag returns false if the url does not meet the required specifications*/
@@ -30,6 +30,7 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var statusCodeCountry int
+	//Gets the country response
 	country, err := http.Get(COUNTRY_URL)
 	if err != nil {
 		statusCodeCountry = http.StatusServiceUnavailable
@@ -39,6 +40,7 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var statusCodeUni int
+	//Gets the university response
 	uni, err := http.Get(UNI_URL)
 	if err != nil {
 		statusCodeCountry = http.StatusServiceUnavailable
@@ -48,6 +50,7 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var diag Diag
+	//Building the diag object:
 	diag.CountriesApiStatus = strconv.Itoa(statusCodeCountry)
 	diag.UnisApiStatus = strconv.Itoa(statusCodeUni)
 	diag.Version = "V1"
@@ -64,7 +67,7 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 }
 
 //urlHandlerDiag
-//*Validates the url for diag. Returns true if valid.*/
+/*Validates the url for diag. Returns true if valid.*/
 func urlHandlerDiag(w http.ResponseWriter, url string) bool {
 	urlParts := strings.Split(url, "/")
 

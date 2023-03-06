@@ -84,6 +84,7 @@ func Decode(w http.ResponseWriter, body io.ReadCloser, list any) bool {
 func AddCountryToArr(w http.ResponseWriter, countryCode string, countryArr *[]Country) bool {
 	var tempCountryArr []Country
 
+	//Gets the country response. success is false if it fails
 	country, success := GetCountryByAlphaCode(w, countryCode)
 
 	if !success {
