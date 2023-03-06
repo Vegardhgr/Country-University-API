@@ -100,9 +100,19 @@ unnecessary data will be collected and processed. <br>
 ---
 
 #### Error handling
-In golang, it seems to be no prescribed approach for managing erros. If an error appears some where in the code, it could either be returned back to 
+In golang, it seems to be no prescribed approach for managing errors. If an error appears some where in the code, it could either be returned back to 
 the top, based on the same concept as exceptions in java, or the error could be managed where it happens. Since exceptions is not a thing in golang, it 
 does not seem to be any good ways to return and handle errors at the top of the code. Therefore, in this assignment, error handling is done where the error appears.
 This may not be the best way to deal with errors, but it was more satisfying to just return a boolean based on whether there was an error and deal with it where it
 appeared, compared to always needing to return an error and then check if the returned error was equal to a specific error string.
 
+---
+
+#### Mock service
+When creating and testing the uniinfo endpoint, a mock service that imitated the actual APIs was used.
+This way, the actual endpoints was not unnecessarily spammed with request. The mock service uses two json files, 
+one that contains example country info, and the other one that contains example university info. Then there is 
+a file called mockHandler.go that contains two important functions, MockHandlerUniversity and MockHandlerCountry. 
+These functions read from the json files, and then they send the output.<br>
+>Link to mock service repository:<br>
+> https://git.gvk.idi.ntnu.no/course/prog2005/prog2005-2023-workspace/vegardhgr/mockservice
