@@ -24,25 +24,28 @@ func DiagHandler(w http.ResponseWriter, r *http.Request) {
 //diagHandlerGet
 //*Contains the functionality for diag path*/
 func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
 	/*urlHandlerDiag returns false if the url does not meet the required specifications*/
 	if !urlHandlerDiag(w, r.URL.String()) {
 		return
 	}
+	var statusCodeCountry int
 	country, err := http.Get(COUNTRY_URL)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		statusCodeCountry = http.StatusServiceUnavailable
 		log.Println("Error when getting the following url: ", COUNTRY_URL, ". Error: ", err)
-		return
+	} else { /*Contains a body*/
+		statusCodeCountry = country.StatusCode
 	}
-	statusCodeCountry := country.StatusCode
 
+	var statusCodeUni int
 	uni, err := http.Get(UNI_URL)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		statusCodeCountry = http.StatusServiceUnavailable
 		log.Println("Error when getting the following url: ", UNI_URL, ". Error: ", err)
-		return
+	} else { /*Contains a body*/
+		statusCodeUni = uni.StatusCode
 	}
-	statusCodeUni := uni.StatusCode
 
 	var diag Diag
 	diag.CountriesApiStatus = strconv.Itoa(statusCodeCountry)
@@ -50,6 +53,7 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 	diag.Version = "V1"
 	diag.Uptime = GetTime()
 	enc := json.NewEncoder(w)
+	//Set indent pretty prints as in postman
 	enc.SetIndent("", "    ")
 	err = enc.Encode(diag)
 
