@@ -1,7 +1,7 @@
 package handler
 
 // UniInfo
-///*Relevant university and country fields*/
+//Relevant university and country fields
 type UniInfo struct {
 	UniName  string   `json:"name"`
 	Country  string   `json:"country"`
@@ -11,14 +11,14 @@ type UniInfo struct {
 }
 
 // CountryInfo
-///*Relevant country fields*/
+//Relevant country fields
 type CountryInfo struct {
 	Languages map[string]string `json:"languages"`
 	StreetMap string            `json:"map"`
 }
 
 //Country
-///*Fields that are necessary from the country api, but these are not sent to the user*/
+//Fields that are necessary from the country api, but these are not sent to the user
 type Country struct {
 	Name      CountryName       `json:"name"`
 	Cca2      string            `json:"cca2"`
@@ -27,19 +27,19 @@ type Country struct {
 }
 
 // Borders
-///*A struct for bordering countries*/
+//A struct for bordering countries
 type Borders struct {
 	Borders []string `json:"borders"`
 }
 
 // CountryName
-///*A struct for a countries official name*/
+//A struct for a countries official name
 type CountryName struct {
 	Official string `json:"official"`
 }
 
 // Diag
-///*A struct for diag*/
+//A struct for diag
 type Diag struct {
 	UnisApiStatus      string  `json:"universitiesapi"`
 	CountriesApiStatus string  `json:"countriesapi"`
