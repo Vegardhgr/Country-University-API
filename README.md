@@ -36,7 +36,7 @@ The APIs used to retrieve information are listed below:
 ### Search for universities in bordering countries
 >Path: /unisearcher/v1/neighbourunis/{:country_name}/{:partial_or_complete_university_name}{?limit={:number}}
 #### Example:
->/unisearcher/v1/neighbourunis/russia/univeristy?limit=2
+>/unisearcher/v1/neighbourunis/russia/university?limit=2
 #### Response:
 ```json
 [
