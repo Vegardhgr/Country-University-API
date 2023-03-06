@@ -3,9 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // NeighbourUnisHandler
@@ -137,6 +139,14 @@ func combineUniversityAndCountry(unisInBorderingCountries *[]UniInfo, allUnis *[
 	countryArr *[]Country, limit int) {
 	if len(*allUnis) > 0 {
 		unisAdded := 0
+		/*If a limit is specified, the output will be randomized*/
+		if limit != -1 {
+			/*Shuffles the list so that the output will not be identical every time*/
+			rand.Seed(time.Now().UnixNano())
+			rand.Shuffle(len(*allUnis), func(i, j int) {
+				(*allUnis)[i], (*allUnis)[j] = (*allUnis)[j], (*allUnis)[i]
+			})
+		}
 		//Looping through universities
 		for i := range *allUnis {
 			//Lopping through countries
