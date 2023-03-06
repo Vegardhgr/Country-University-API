@@ -58,6 +58,7 @@ func diagHandlerGet(w http.ResponseWriter, r *http.Request) {
 	err = enc.Encode(diag)
 
 	if err != nil {
+		log.Println("Error during encoding: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
