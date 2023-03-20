@@ -6,7 +6,7 @@ const COUNTRY_URL = "http://localhost:8081/unisearcher/v1/country/"*/
 
 //Default paths to the APIs
 const UNI_URL = "http://universities.hipolabs.com/"
-const COUNTRY_URL = "https://restcountries.com/"
+const COUNTRY_URL = "http://129.241.150.113:8080/"
 
 //Paths used for this service
 const DEFAULT = "/"
