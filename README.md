@@ -1,4 +1,4 @@
-# assignment1
+# Assignment1
 
 ## Introduction 
 
@@ -10,6 +10,8 @@ The APIs used to retrieve information are listed below:
 </ul>
 
 ## Instructions
+### Hosted on render
+>Base URL: https://assignment1-ddu3.onrender.com
 ### Search for university
 >Path: /unisearcher/v1/uniinfo/{:partial_or_complete_university_name}
 #### Example:
